@@ -1,8 +1,9 @@
 use axum::{routing::post, AddExtensionLayer, Router};
 mod auth;
 mod core;
+mod utils;
 
-use crate::auth::{login, register};
+use crate::auth::controller::{login, register};
 use crate::core::{connection, Application};
 
 #[tokio::main]

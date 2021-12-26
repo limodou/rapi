@@ -1,25 +1,23 @@
 use anyhow::Result;
-use axum::{extract::Extension, http::StatusCode, response::IntoResponse, Json};
+use axum::{extract::Extension, response::IntoResponse, Json};
 use sqlx::{self, mysql::MySqlPool};
 
-use super::User;
-use super::{LoginUser, RegisterUser};
-use crate::core::{result, AppError, Res};
+use super::vo::{LoginReq, RegisterReq};
+use crate::core::{result, AppError};
+use super::service;
 
 pub async fn login(
-  Json(user): Json<LoginUser>,
+  Json(user): Json<LoginReq>,
   Extension(pool): Extension<MySqlPool>,
 ) -> Result<impl IntoResponse, AppError> {
-  User::find_by_username(&pool, &user.username).await?;
-  Ok(result::ok())
+  let res = service::login(&pool, user).await?;
+  Ok(result::ok_data(res))
 }
 
 pub async fn register(
-  Json(user): Json<RegisterUser>,
+  Json(user): Json<RegisterReq>,
   Extension(pool): Extension<MySqlPool>,
 ) -> Result<impl IntoResponse, AppError> {
-  println!("user {:?}", user);
-
-  User::create(&pool, &user).await?;
+  service::register(&pool, user).await?;
   Ok(result::ok())
 }

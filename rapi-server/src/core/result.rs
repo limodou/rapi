@@ -1,4 +1,4 @@
-use axum::{http::StatusCode, Json, response::IntoResponse};
+use axum::{http::StatusCode, response::IntoResponse, Json};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
@@ -22,6 +22,20 @@ pub fn ok_message(message: &str) -> impl IntoResponse {
 #[allow(dead_code)]
 pub fn ok() -> StatusCode {
   StatusCode::OK
+}
+
+#[allow(dead_code)]
+pub fn ok_data<T>(data: T) -> impl IntoResponse
+where
+  T: serde::Serialize,
+{
+  let res = Res {
+    code: 0,
+    data: Some(data),
+    message: None,
+  };
+  let body = Json(res);
+  (StatusCode::OK, body).into_response()
 }
 
 #[allow(dead_code)]

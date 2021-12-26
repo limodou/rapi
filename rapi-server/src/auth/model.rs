@@ -1,4 +1,4 @@
-use super::RegisterUser;
+use super::vo::RegisterReq;
 use anyhow::Result;
 use chrono::prelude::*;
 use sqlx::{self, mysql::MySqlPool};
@@ -34,7 +34,7 @@ impl User {
     .await?;
     Ok(rec)
   }
-  pub async fn create(pool: &MySqlPool, user: &RegisterUser) -> Result<()> {
+  pub async fn create(pool: &MySqlPool, user: &RegisterReq) -> Result<()> {
     let rec = sqlx::query("INSERT INTO user (username, realname, password) values (?, ?, ?)")
       .bind(&user.username)
       .bind(&user.realname)
