@@ -1,5 +1,8 @@
 // use thiserror::Error;
 use anyhow;
+use std::error::Error;
+use std::fmt;
+use std::fmt::Display;
 use axum::{
   http::StatusCode,
   response::{IntoResponse, Response},
@@ -11,6 +14,14 @@ pub struct AppError {
   pub status_code: StatusCode,
   pub code: u32,
   pub message: String,
+}
+
+impl Error for AppError {}
+
+impl Display for AppError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{} {} {}", self.status_code, self.code, &self.message)
+    }
 }
 
 impl From<anyhow::Error> for AppError

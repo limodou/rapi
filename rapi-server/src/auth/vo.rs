@@ -1,6 +1,4 @@
-use serde::{Serialize, Deserialize};
-mod token;
-pub use token::Token;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize)]
 pub struct LoginReq {

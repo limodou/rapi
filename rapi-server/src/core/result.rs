@@ -1,4 +1,4 @@
-use axum::{http::StatusCode, response::IntoResponse, Json};
+use poem::{http::StatusCode, IntoResponse, web::Json};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
@@ -34,7 +34,7 @@ where
     data: Some(data),
     message: None,
   };
-  let body = Json(res);
+  let body = Json(json!(res));
   (StatusCode::OK, body).into_response()
 }
 

@@ -1,14 +1,10 @@
-use crate::core::AppError;
-use axum::http::StatusCode;
+use poem::{error::ResponseError, http::StatusCode};
+#[derive(thiserror::Error, Debug, Copy, Clone, Eq, PartialEq)]
+#[error("Invalid password error")]
+pub struct InvalidPasswordError;
 
-pub struct AuthError;
-
-impl AuthError {
-  pub fn invalid_password() -> AppError {
-    AppError {
-      status_code: StatusCode::OK,
-      code: 1001,
-      message: "密码不正确".to_string(),
+impl ResponseError for InvalidPasswordError {
+    fn status(&self) -> StatusCode {
+        StatusCode::INTERNAL_SERVER_ERROR
     }
-  }
 }
