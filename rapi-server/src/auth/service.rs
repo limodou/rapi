@@ -1,10 +1,9 @@
-use anyhow::{self, Result};
+use super::error::*;
 use super::model::*;
 use super::vo::*;
-use super::error::*;
+use crate::utils::token::Token;
+use anyhow::{self, Result};
 use sqlx::{self, mysql::MySqlPool};
-use crate::utils::jwt_middle::Token;
-use chrono::Utc;
 
 #[allow(dead_code)]
 pub async fn login(pool: &MySqlPool, user: LoginReq) -> Result<LoginRes> {
@@ -12,16 +11,11 @@ pub async fn login(pool: &MySqlPool, user: LoginReq) -> Result<LoginRes> {
   let u = User::find_by_username(pool, &user.username).await?;
   // 检查口令是否正确
   if u.password != user.password {
-    return Err(InvalidPasswordError.into())
+    return Err(AuthError::new(AuthErrorKind::InvalidPasswordError));
   }
-  let claims = Token {
-    sub: u.username,
-    exp: Utc::now().timestamp() + 10000,
-  };
+  let claims = Token::new(u.username, 10000);
   let token = claims.sign("hello")?;
-  let res = LoginRes {
-    token
-  };
+  let res = LoginRes { token };
   Ok(res)
 }
 

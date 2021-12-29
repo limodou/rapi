@@ -1,12 +1,12 @@
 use dotenv::dotenv;
 use poem::{
-    get, handler, middleware::AddData, post, web::Data, EndpointExt, Error, IntoResponse, Route,
+    get, handler, middleware::AddData, post, web::Data, EndpointExt, Route,
 };
 
 mod auth;
 mod core;
 mod utils;
-use utils::jwt_middle::{JwtTokenMiddleware, User, TokenParseError};
+use utils::jwt_middle::{JwtTokenMiddleware, User};
 
 #[handler]
 fn hello(Data(user): Data<&User>) -> String {
@@ -29,15 +29,8 @@ async fn main() {
         .at("/register", post(auth::controller::register))
         .with(AddData::new(pool))
         .with(JwtTokenMiddleware)
-        .catch_all_error(custom_error);
+        .catch_all_error(core::error::custom_error);
 
     core::Application::run(app).await;
 }
 
-async fn custom_error(err: Error) -> impl IntoResponse {
-    //  Json(ErrorResponse {
-    //      message: err.to_string(),
-    //  })
-    println!("{}", err.is::<TokenParseError>());
-    core::result::fail(1000, &err.to_string())
-}

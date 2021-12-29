@@ -1,7 +1,6 @@
-use anyhow;
 use poem::{Endpoint, Middleware, Request, Result};
-use thiserror;
-// use anyhow::{anyhow};
+use super::token::Token;
+
 pub struct JwtTokenMiddleware;
 
 impl<E: Endpoint> Middleware<E> for JwtTokenMiddleware {
@@ -45,44 +44,15 @@ impl<E: Endpoint> Endpoint for JwtTokenMiddlewareImpl<E> {
   }
 }
 
-use jsonwebtoken as jwt;
-use jwt::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
-use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Token {
-  pub sub: String,
-  pub exp: i64,
-}
 
-impl Token {
-  #[allow(dead_code)]
-  pub fn sign(&self, key: &str) -> anyhow::Result<String> {
-    let mut header = Header::default();
-    header.alg = Algorithm::HS512;
-    let token = encode(&header, &self, &EncodingKey::from_secret(key.as_ref()))?;
-    Ok(token)
-  }
+// use poem::{error::ResponseError, http::StatusCode};
+// #[derive(thiserror::Error, Debug, Copy, Clone, Eq, PartialEq)]
+// #[error("Token parsed error")]
+// pub struct TokenParseError;
 
-  #[allow(dead_code)]
-  pub fn parse(key: &str, token: &str) -> anyhow::Result<Self> {
-    // let validation = Validation {leeway: 600, ..Default::default()};
-    let res = decode::<Self>(
-      token,
-      &DecodingKey::from_secret(key.as_ref()),
-      &Validation::new(Algorithm::HS512),
-    )?;
-    Ok(res.claims)
-  }
-}
-
-use poem::{error::ResponseError, http::StatusCode};
-#[derive(thiserror::Error, Debug, Copy, Clone, Eq, PartialEq)]
-#[error("Token parsed error")]
-pub struct TokenParseError;
-
-impl ResponseError for TokenParseError {
-  fn status(&self) -> StatusCode {
-    StatusCode::INTERNAL_SERVER_ERROR
-  }
-}
+// impl ResponseError for TokenParseError {
+//   fn status(&self) -> StatusCode {
+//     StatusCode::INTERNAL_SERVER_ERROR
+//   }
+// }
