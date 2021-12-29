@@ -14,7 +14,7 @@ pub async fn login(pool: &MySqlPool, user: LoginReq) -> Result<LoginRes> {
     return Err(AuthError::new(AuthErrorKind::InvalidPasswordError));
   }
   let claims = Token::new(u.username, 10000);
-  let token = claims.sign("hello")?;
+  let token = claims.sign()?;
   let res = LoginRes { token };
   Ok(res)
 }

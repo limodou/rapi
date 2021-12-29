@@ -1,7 +1,5 @@
 use dotenv::dotenv;
-use poem::{
-    get, handler, middleware::AddData, post, web::Data, EndpointExt, Route,
-};
+use poem::{get, handler, middleware::AddData, post, web::Data, EndpointExt, Route};
 
 mod auth;
 mod core;
@@ -21,7 +19,13 @@ async fn main() {
     if std::env::var_os("RUST_LOG").is_none() {
         std::env::set_var("RUST_LOG", "poem=debug");
     }
-    let pool = core::connection("mysql://root:rootroot@localhost:3306/rapi").await;
+
+    let connection = match std::env::var_os("DB_CONNECTION") {
+        Some(c) => c.to_str().unwrap().to_string(),
+        None => panic!("DB_CONNECTION is not set in env"),
+    };
+
+    let pool = core::connection(&connection).await;
 
     let app = Route::new()
         .at("/", get(hello))
@@ -33,4 +37,3 @@ async fn main() {
 
     core::Application::run(app).await;
 }
-

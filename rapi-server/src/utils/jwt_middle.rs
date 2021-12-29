@@ -1,5 +1,5 @@
-use poem::{Endpoint, Middleware, Request, Result};
 use super::token::Token;
+use poem::{Endpoint, Middleware, Request, Result};
 
 pub struct JwtTokenMiddleware;
 
@@ -16,8 +16,6 @@ pub struct JwtTokenMiddlewareImpl<E> {
   ep: E,
 }
 
-const TOKEN_HEADER: &str = "token";
-
 #[derive(Debug)]
 pub struct User(pub Option<String>);
 
@@ -28,11 +26,11 @@ impl<E: Endpoint> Endpoint for JwtTokenMiddlewareImpl<E> {
   async fn call(&self, mut req: Request) -> Result<Self::Output> {
     let value = match req
       .headers()
-      .get(TOKEN_HEADER)
+      .get(&get_token_name())
       .and_then(|value| Some(value.to_str().unwrap().to_string()))
     {
       Some(token) => {
-        let t = Token::parse("hello", &token)?;
+        let t = Token::parse(&token)?;
         Some(t.sub)
       }
       _ => None,
@@ -44,6 +42,12 @@ impl<E: Endpoint> Endpoint for JwtTokenMiddlewareImpl<E> {
   }
 }
 
+fn get_token_name() -> String {
+  match std::env::var_os("TOKEN_NAME") {
+    Some(t) => t.to_str().unwrap().to_string(),
+    None => "token".into(),
+  }
+}
 
 
 // use poem::{error::ResponseError, http::StatusCode};
