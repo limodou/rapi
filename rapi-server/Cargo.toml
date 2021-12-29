@@ -9,7 +9,7 @@ edition = "2021"
 anyhow = "1"     
 thiserror = "1"     # 错误处理
 dotenv = "0.15.0"
-poem = { version = "1.2", features = ["multipart", "anyhow"] }
+poem = { version = "1.2", features = ["multipart", "anyhow", "static-files"] }
 tokio = { version = "1.0", features = ["full"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
