@@ -6,12 +6,19 @@ use poem::{
 mod auth;
 mod core;
 mod utils;
-use utils::jwt_middle::{JwtTokenMiddleware, User};
+use auth::jwt_middle::{JwtTokenMiddleware, UserId};
+use auth::jwt_token::{JwtUser, JwtUserNotCheck};
 
 #[handler]
-fn hello(Data(user): Data<&User>) -> String {
+fn hello(JwtUser(user): JwtUser) -> String {
     println!("{:?}", user);
-    format!("hello: Poem {:?}", user.0.clone())
+    format!("hello: Poem {:?}", user)
+}
+
+#[handler]
+fn hello1(JwtUserNotCheck(user): JwtUserNotCheck) -> String {
+    println!("{:?}", user);
+    format!("hello: Poem {:?}", user)
 }
 
 #[tokio::main]
@@ -35,7 +42,8 @@ async fn main() {
     let pool = core::connection(&connection).await;
 
     let app = Route::new()
-        // .at("/", get(hello))
+        .at("/hello", get(hello))
+        .at("/hello1", get(hello1))
         .at("/api/login", post(auth::controller::login))
         .at("/api/register", post(auth::controller::register))
         .nest("/", StaticFiles::new(static_dir).index_file("index.html"))

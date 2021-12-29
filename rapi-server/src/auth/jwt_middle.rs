@@ -16,8 +16,8 @@ pub struct JwtTokenMiddlewareImpl<E> {
   ep: E,
 }
 
-#[derive(Debug)]
-pub struct User(pub Option<String>);
+#[derive(Debug, Clone)]
+pub struct UserId(pub Option<String>);
 
 #[poem::async_trait]
 impl<E: Endpoint> Endpoint for JwtTokenMiddlewareImpl<E> {
@@ -35,7 +35,7 @@ impl<E: Endpoint> Endpoint for JwtTokenMiddlewareImpl<E> {
       }
       _ => None,
     };
-    req.extensions_mut().insert(User(value));
+    req.extensions_mut().insert(UserId(value));
 
     // call the inner endpoint.
     self.ep.call(req).await

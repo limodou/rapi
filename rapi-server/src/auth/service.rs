@@ -1,7 +1,7 @@
 use super::error::*;
 use super::model::*;
 use super::vo::*;
-use crate::utils::token::Token;
+use super::token::Token;
 use anyhow::{self, Result};
 use sqlx::{self, mysql::MySqlPool};
 
