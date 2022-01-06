@@ -5,7 +5,7 @@ use serde_json::json;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Res<T> {
   pub code: u32,
-  pub data: Option<T>,
+  pub result: Option<T>,
   pub message: Option<String>,
 }
 
@@ -31,7 +31,7 @@ where
 {
   let res = Res {
     code: 0,
-    data: Some(data),
+    result: Some(data),
     message: None,
   };
   let body = Json(json!(res));

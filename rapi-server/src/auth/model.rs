@@ -22,7 +22,7 @@ pub struct User {
 }
 
 impl User {
-  pub async fn find_by_username(pool: &MySqlPool, username: &str) -> Result<User> {
+  pub async fn find_by_username(pool: &MySqlPool, username: &str) -> Result<Option<User>> {
     let rec= sqlx::query_as::<_, User>(
       r#"SELECT id, username, realname, password, access_token,
     is_super, error_times, freeze_time, is_available, is_first_time_login, last_landing_time,
@@ -30,7 +30,7 @@ impl User {
     FROM user WHERE username=?"#,
     )
     .bind(username)
-    .fetch_one(pool)
+    .fetch_optional(pool)
     .await?;
     Ok(rec)
   }

@@ -29,10 +29,13 @@ impl<E: Endpoint> Endpoint for JwtTokenMiddlewareImpl<E> {
       .get(&get_token_name())
       .and_then(|value| Some(value.to_str().unwrap().to_string()))
     {
-      Some(token) => {
-        let t = Token::parse(&token)?;
-        Some(t.sub)
-      }
+      Some(token) => match Token::parse(&token) {
+        Ok(value) => Some(value.sub),
+        Err(e) => {
+          tracing::info!("{}", e.to_string());
+          None
+        }
+      },
       _ => None,
     };
     req.extensions_mut().insert(UserId(value));
@@ -48,7 +51,6 @@ fn get_token_name() -> String {
     None => "token".into(),
   }
 }
-
 
 // use poem::{error::ResponseError, http::StatusCode};
 // #[derive(thiserror::Error, Debug, Copy, Clone, Eq, PartialEq)]

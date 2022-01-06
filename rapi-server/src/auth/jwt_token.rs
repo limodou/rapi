@@ -23,7 +23,10 @@ impl<'a> FromRequest<'a> for JwtUser {
         println!("user={:?}", user);
         let u = (*user).clone();
         match u.0 {
-          Some(username) => User::find_by_username(pool, &username).await?,
+          Some(username) => match User::find_by_username(pool, &username).await? {
+            Some(u1) => u1,
+            None => return Err(Error::from(anyhow!("1007 用户不存在"))),
+          },
           None => {
             return Err(Error::from(anyhow!(
               "1004 Token is not valid or missing token"
@@ -61,7 +64,7 @@ impl<'a> FromRequest<'a> for JwtUserNotCheck {
         println!("user={:?}", user);
         let u = (*user).clone();
         match u.0 {
-          Some(user) => Some(User::find_by_username(pool, &user).await?),
+          Some(username) => User::find_by_username(pool, &username).await?,
           None => None,
         }
       }

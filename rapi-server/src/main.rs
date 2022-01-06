@@ -1,6 +1,6 @@
 use dotenv::dotenv;
 use poem::{
-    endpoint::StaticFiles, get, handler, middleware::AddData, post, web::Data, EndpointExt, Route,
+    endpoint::StaticFiles, get, handler, middleware::{AddData, Tracing}, post, web::Data, EndpointExt, Route,
 };
 
 mod auth;
@@ -46,7 +46,9 @@ async fn main() {
         .at("/hello1", get(hello1))
         .at("/api/login", post(auth::controller::login))
         .at("/api/register", post(auth::controller::register))
+        .at("/api/getUserInfo", post(auth::controller::get_user_info))
         .nest("/", StaticFiles::new(static_dir).index_file("index.html"))
+        .with(Tracing)
         .with(AddData::new(pool))
         .with(JwtTokenMiddleware)
         .catch_all_error(core::error::custom_error);
