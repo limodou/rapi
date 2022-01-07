@@ -29,4 +29,5 @@ pub struct GetUserInfoRes {
   pub username: String,
   pub realname: String,
   pub is_super: bool,
+  pub permissions: Vec<String>,
 }

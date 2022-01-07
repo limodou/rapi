@@ -30,12 +30,23 @@ pub async fn register(pool: &MySqlPool, user: RegisterReq) -> Result<()> {
 }
 
 #[allow(dead_code)]
-pub async fn get_user_info(pool: &MySqlPool, user: &User) -> Result<GetUserInfoRes> {
+pub async fn get_user_info(_pool: &MySqlPool, user: &User) -> Result<GetUserInfoRes> {
   // let user = User::find_by_username(&pool, &user.username).await?;
   let res = GetUserInfoRes {
     username: user.username.clone(),
     realname: user.realname.clone(),
     is_super: user.is_super,
+    permissions: get_permissions(user),
   };
   Ok(res)
+}
+
+fn get_permissions(user: &User) -> Vec<String>{
+  let mut permissions = Vec::new();
+  if user.is_super {
+    permissions.push("super".into());
+  } else {
+    permissions.push("user".into());
+  }
+  permissions
 }

@@ -20,7 +20,6 @@ impl<'a> FromRequest<'a> for JwtUser {
     let pool = pool.unwrap();
     let user = match req.extensions().get::<UserId>() {
       Some(user) => {
-        println!("user={:?}", user);
         let u = (*user).clone();
         match u.0 {
           Some(username) => match User::find_by_username(pool, &username).await? {
@@ -61,7 +60,6 @@ impl<'a> FromRequest<'a> for JwtUserNotCheck {
     let pool = pool.unwrap();
     let user = match req.extensions().get::<UserId>() {
       Some(user) => {
-        println!("user={:?}", user);
         let u = (*user).clone();
         match u.0 {
           Some(username) => User::find_by_username(pool, &username).await?,
