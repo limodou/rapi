@@ -56,7 +56,13 @@ export function createRouterGuards(router: Router) {
       return;
     }
 
-    const userInfo = await userStore.GetInfo();
+    // 增加获取用户信息失败时，跳转到登录窗口
+    let userInfo;
+    try {
+      userInfo = await userStore.GetInfo();
+    } catch (e) {
+      next({ name: 'Login' });
+    }
 
     const routes = await asyncRouteStore.generateRoutes(userInfo);
 

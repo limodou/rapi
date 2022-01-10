@@ -9,6 +9,10 @@ const modules = import.meta.globEager('./modules/**/*.ts');
 const routeModuleList: RouteRecordRaw[] = [];
 
 Object.keys(modules).forEach((key) => {
+  // 增加对_开头的文件的过滤
+  const v = key.split('/');
+  const filename = v[v.length - 1];
+  if (filename.startsWith('_')) return;
   const mod = modules[key].default || {};
   const modList = Array.isArray(mod) ? [...mod] : [mod];
   routeModuleList.push(...modList);
