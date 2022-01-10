@@ -1,13 +1,19 @@
 use dotenv::dotenv;
 use poem::{
-    endpoint::StaticFiles, get, handler, middleware::{AddData, Tracing}, post, web::Data, EndpointExt, Route,
+    endpoint::StaticFiles,
+    get, handler,
+    middleware::{AddData, Tracing},
+    post,
+    web::Data,
+    EndpointExt, Route,
 };
 
-mod auth;
 mod core;
 mod utils;
+mod auth; // 认证模块
 use auth::jwt_middle::{JwtTokenMiddleware, UserId};
 use auth::jwt_token::{JwtUser, JwtUserNotCheck};
+mod group; // 分组模块
 
 #[handler]
 fn hello(JwtUser(user): JwtUser) -> String {
@@ -47,6 +53,7 @@ async fn main() {
         .at("/api/login", post(auth::controller::login))
         .at("/api/register", post(auth::controller::register))
         .at("/api/getUserInfo", post(auth::controller::get_user_info))
+        .at("/api/createGroup", post(group::controller::create_group))
         .nest("/", StaticFiles::new(static_dir).index_file("index.html"))
         .with(Tracing)
         .with(AddData::new(pool))
