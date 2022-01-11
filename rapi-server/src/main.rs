@@ -54,6 +54,7 @@ async fn main() {
         .at("/api/register", post(auth::controller::register))
         .at("/api/getUserInfo", post(auth::controller::get_user_info))
         .at("/api/createGroup", post(group::controller::create_group))
+        .at("/api/getGroupUsers", post(group::controller::get_users))
         .nest("/", StaticFiles::new(static_dir).index_file("index.html"))
         .with(Tracing)
         .with(AddData::new(pool))

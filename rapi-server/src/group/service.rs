@@ -18,3 +18,13 @@ pub async fn create(pool: &mut MySqlConnection, group: &CreateGroupReq) -> Resul
         Err(anyhow::anyhow!("1011 组名已经存在"))
     }
 }
+
+#[allow(dead_code)]
+pub async fn get_users(
+    pool: &mut MySqlConnection,
+    group: &FindGroupUsersReq,
+) -> Result<FindGroupUsersRes> {
+    // 获取组信息
+    let g = Group::get_users(pool, group.group_id).await?;
+    Ok(FindGroupUsersRes { users: g })
+}

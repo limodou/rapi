@@ -73,3 +73,19 @@ impl Group {
         Ok(row)
     }
 }
+
+impl Group {
+    // 添加用户信息
+    #[allow(dead_code)]
+    pub async fn get_users(pool: &mut MySqlConnection, group_id: i32) -> Result<Vec<GroupUserRes>> {
+        let recs = sqlx::query_as::<_, GroupUserRes>(
+            r#"SELECT g.id, u.realname, g.member_type 
+            FROM `group_users` g, `user` u 
+            WHERE group_id = ? and g.user_id=u.id"#,
+        )
+        .bind(group_id)
+        .fetch_all(pool)
+        .await?;
+        Ok(recs)
+    }
+}

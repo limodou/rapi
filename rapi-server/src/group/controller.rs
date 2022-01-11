@@ -25,3 +25,19 @@ pub async fn create_group(
     tr.commit().await?;
     Ok(result::ok_data(res))
 }
+
+#[handler]
+pub async fn get_users(
+    Json(group): Json<vo::FindGroupUsersReq>,
+    JwtUser(user): JwtUser,
+    Data(pool): Data<&MySqlPool>,
+) -> Result<impl IntoResponse> {
+    // group
+    //     .validate()
+    //     .map_err(|e| anyhow!(format!("1011 {}", e.to_string())))?;
+    // let mut tr = pool.begin().await?;
+    // let res = service::create(&mut tr, &group).await?;
+    // tr.commit().await?;
+    let res = service::get_users(&mut *pool.acquire().await?, &group).await?;
+    Ok(result::ok_data(res))
+}
